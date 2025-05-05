@@ -96,6 +96,22 @@ function App() {
               <p><strong>Catégorie:</strong> {article.category}</p>
               <p><strong>Sous-Catégorie:</strong> {article.sub_category}</p>
               <a href={article.url} target="_blank" rel="noopener noreferrer">Voir l'article</a>
+              {article.content && (
+                <div
+                  style={{
+                    flexBasis: '40%',
+                    maxHeight: '300px',
+                    overflowY: 'auto',
+                    backgroundColor: '#f9f9f9',
+                    padding: '1rem',
+                    border: '1px solid #ddd',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                >
+                  <strong>Contenu :</strong>
+                  <div>{article.content}</div>
+                </div>
+              )}
             </div>
           ))
         )}

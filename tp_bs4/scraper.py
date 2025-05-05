@@ -13,11 +13,20 @@ def scrape_article(url):
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    # GOOD
-    title_elem = soup.find('h1')
+    header_elem = soup.find('header', class_='entry-header')
+
+    title_elem = header_elem.find('h1', 'entry-title')
     title = title_elem.text.strip() if title_elem else None
 
-    # GOOD
+    summary_elem = header_elem.select_one('div.article-hat.t-quote')
+    summary = summary_elem.text.strip() if summary_elem else None
+
+    date_elem = header_elem.select_one('span.posted-on time')
+    date_str = date_elem['datetime'][:10] if date_elem and 'datetime' in date_elem.attrs else None
+
+    author_elem = header_elem.select_one('span.byline a')
+    author = author_elem.text.strip() if author_elem else None
+
     thumbnail_url = None
     image_elem = soup.find('meta', property='og:image')
     if image_elem and 'content' in image_elem.attrs:
@@ -36,18 +45,6 @@ def scrape_article(url):
     sub_category = sub_category_elem.text.strip() if sub_category_elem else None
 
     # GOOD
-    summary_elem = soup.find('div', class_='article-hat t-quote pb-md-8 pb-5')
-    summary = summary_elem.text.strip() if summary_elem else None
-
-    # GOOD
-    date_elem = soup.select_one('span.posted-on time')
-    date_str = date_elem['datetime'][:10] if date_elem and 'datetime' in date_elem.attrs else None
-
-    # GOOD
-    author_elem = soup.select_one('span.byline a')
-    author = author_elem.text.strip() if author_elem else None
-
-    # GOOD
     images_dict = {}
     for img in soup.find_all('figure'):
         lazy_srcset = img.find('img')
@@ -59,6 +56,10 @@ def scrape_article(url):
         image_caption = lazy_srcset['alt'].strip()
         images_dict[image_url] = image_caption
 
+    # GOOD
+    article_content_elem = soup.find('div', class_='entry-content')
+    article_content = article_content_elem.text.strip() if article_content_elem else None
+
     article_data = {
         'url': url,
         'title': title,
@@ -68,6 +69,7 @@ def scrape_article(url):
         'summary': summary,
         'date': date_str,
         'author': author,
+        'content': article_content,
         'images': images_dict
     }
 
